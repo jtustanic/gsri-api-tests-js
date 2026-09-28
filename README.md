@@ -2,47 +2,71 @@
 
 Automated API test suite for the **Global Shipping Rate Integrator (GSRI)**, built with **Playwright Test and JavaScript**.
 
-For this project, [JSONPlaceholder](https://jsonplaceholder.typicode.com) is used as a mock backend:
+For this assignment, [JSONPlaceholder](https://jsonplaceholder.typicode.com) is used as a mock backend:
 
 | GSRI service             | Mock endpoint |
 | ------------------------ | ------------- |
 | Shipping Rates Service   | `/posts`      |
 | Customer Profile Service | `/users`      |
 
-The suite covers functional, negative, contract/schema and basic state-related API testing.
+The suite covers functional, negative, contract/schema and POST-related API scenarios.
 
 ## Tech Stack
 
 * JavaScript (CommonJS)
 * Playwright Test
-* Node.js 18+
 * Ajv / JSON Schema
+* Node.js 18+
 * JSONPlaceholder
-* HTML and JUnit reporting
 
-## Install and run
+## Installation and Running Tests
 
 ### Prerequisites
 
-* Node.js 18 or later
+* Node.js 18+
 * npm
 
 No browsers are required because this project only tests APIs.
 
+Install dependencies:
+
 ```bash
 npm install
-cp .env.example .env        # Windows PowerShell: Copy-Item .env.example .env
+```
+
+Create the environment file:
+
+```bash
+cp .env.example .env
+```
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Run all tests:
+
+```bash
 npm test
 ```
 
 ### Other commands
 
-| Command                 | Description                                  |
-| ----------------------- | -------------------------------------------- |
-| `npm run test:smoke`    | Runs tests tagged with `@smoke`              |
-| `npm run test:contract` | Runs JSON Schema / contract tests            |
-| `npm run test:negative` | Runs negative API tests                      |
-| `npm run report`        | Opens the HTML report from the last test run |
+```bash
+npm run test:smoke
+npm run test:contract
+npm run test:negative
+npm run report
+```
+
+| Command         | Description                             |
+| --------------- | --------------------------------------- |
+| `test:smoke`    | Runs tests tagged `@smoke`              |
+| `test:contract` | Runs JSON Schema / contract tests       |
+| `test:negative` | Runs negative API tests                 |
+| `report`        | Opens the HTML report from the last run |
 
 ## Configuration
 
@@ -50,245 +74,90 @@ Environment-specific values are stored in `.env`.
 
 | Variable              | Description                                                                                          |
 | --------------------- | ---------------------------------------------------------------------------------------------------- |
-| `BASE_URL`            | Base URL of the API under test. Required.                                                            |
+| `BASE_URL`            | Base URL of the API under test                                                                       |
 | `API_PERSISTS_WRITES` | Defines whether POST requests are expected to persist data. Defaults to `false` for JSONPlaceholder. |
 
-The tests do not contain hardcoded environment URLs.
+No environment-specific URLs are hardcoded in the tests.
 
 ## Test Coverage
 
-The suite covers:
+The test suite covers:
 
-* Functional API testing
-* Positive and negative scenarios
-* JSON Schema / contract validation
-* Referential integrity between services
-* POST response validation
+* Retrieving specific shipping rates
+* Validating `userId` references against the Customer Profile service
+* Filtering users/posts by username
+* Creating a quote and validating the `201` response
 * Follow-up GET after POST
-* Data-driven tests
-* Custom Playwright matchers
-* HTML and JUnit test reporting
-
-## Reports
-
-Each test run produces the following reports:
-
-### Console
-
-The Playwright `list` reporter shows the result of each test directly in the terminal.
-
-### HTML report
-
-The HTML report is generated in:
-
-```text
-reports/html
-```
-
-API calls are added as named test steps, for example:
-
-```text
-GET /posts/1
-```
-
-Request and response details are attached to the report as JSON, including:
-
-* HTTP status
-* response body
-* request information
-* duration
-
-This makes it easier to investigate failed tests without manually reproducing the request.
-
-### JUnit XML
-
-JUnit results are generated in:
-
-```text
-reports/junit.xml
-```
-
-This format can be used by CI tools such as Jenkins, GitLab CI or Azure DevOps.
+* JSON Schema validation
+* Non-existent resources and error handling
+* Data-driven test scenarios
 
 ## Project Structure
 
 ```text
 src/
-  config/
-    env.js                    Loads and validates environment configuration
-
-  models/
-    types.js                  JSDoc type definitions
-
+  config/env.js
+  models/types.js
   services/
-    BaseService.js            Shared API request logic
-    ShippingRatesService.js   Shipping Rates API methods
-    CustomerProfileService.js Customer Profile API methods
-
+    BaseService.js
+    ShippingRatesService.js
+    CustomerProfileService.js
   schemas/
-    JSON Schemas used for response validation
-
-  utils/
-    schemaValidator.js        Ajv schema validation helper
-
-  fixtures/
-    index.js                  Test fixtures and custom matchers
-
-  data/
-    testData.js               Test data for data-driven tests
+  utils/schemaValidator.js
+  fixtures/index.js
+  data/testData.js
 
 tests/
-  functional.spec.js          Functional API scenarios
-  state-persistence.spec.js   POST and follow-up GET scenarios
-  contract.spec.js            JSON Schema validation
-  negative.spec.js            Negative API scenarios
+  functional.spec.js
+  state-persistence.spec.js
+  contract.spec.js
+  negative.spec.js
 ```
 
-## Requirement Coverage
+## Why These Tools?
 
-| Requirement                                                     | Test                        |
-| --------------------------------------------------------------- | --------------------------- |
-| A specific rate exists                                          | `functional.spec.js`        |
-| `userId` maps to a valid customer                               | `functional.spec.js`        |
-| Bonus: filter posts by username starting with a specific letter | `functional.spec.js`        |
-| Create a quote and verify `201` response                        | `state-persistence.spec.js` |
-| Bonus: GET the created quote                                    | `state-persistence.spec.js` |
-| Validate API responses against JSON Schemas                     | `contract.spec.js`          |
-| Handle non-existent rates                                       | `negative.spec.js`          |
-| Handle unknown customers                                        | `negative.spec.js`          |
+### Playwright Test
 
-## Test Design
+Playwright was chosen because its `APIRequestContext` provides a built-in HTTP client, while the test runner provides fixtures, assertions, tags, retries and reporting.
 
-### Service layer
+It also allows the project to be extended with UI or end-to-end tests in the future if needed.
 
-API calls are grouped into service classes:
+### JavaScript
 
-```text
-ShippingRatesService
-CustomerProfileService
-```
+Plain JavaScript keeps the project simple and requires no compilation step. JSDoc is used where type information improves readability and editor support.
 
-This keeps request details such as endpoints and HTTP methods outside the test files.
+### Ajv / JSON Schema
 
-For example, tests can use:
+Ajv is used to validate API responses against JSON Schemas. This provides an explicit contract for the expected response structure and data types.
 
-```javascript
-shippingRates.getRateById(1)
-```
+### Service Objects
 
-instead of building the request directly inside the test.
+API requests are grouped into service classes instead of being implemented directly in each test. This keeps endpoint details and request logic in one place and makes the tests easier to read and maintain.
 
-### Fixtures
+## Assumptions
 
-Playwright fixtures are used to provide the service objects and custom matchers to the tests.
+1. **JSONPlaceholder does not persist POST requests.**
+   A POST returns `201`, but the created resource is not actually stored. The test suite therefore uses `API_PERSISTS_WRITES=false` by default and handles the follow-up GET accordingly.
 
-This keeps the test setup centralized and makes the tests easier to read.
+2. **The mock data does not contain a username starting with `J`.**
+   The corresponding bonus test therefore expects an empty result. Other letters with matching users are also tested to verify the filtering logic.
 
-### JSON Schema validation
+3. **A missing rate returns `404` with an empty JSON object `{}`.**
+   This reflects JSONPlaceholder's behaviour and is what the negative test validates.
 
-API responses are validated against JSON Schemas using Ajv.
+4. **The Customer Profile schema allows additional fields.**
+   Only the fields required by the GSRI tests are validated, so unrelated fields added by the upstream service do not break the test.
 
-The schemas verify that responses have the expected structure and data types.
+5. **No authentication is required.**
+   JSONPlaceholder is public. For a real authenticated environment, credentials would be provided through environment variables or CI secrets.
 
-The Shipping Rate schema is strict and does not allow unexpected fields.
+6. **Invalid POST payload validation is not included.**
+   JSONPlaceholder accepts arbitrary POST bodies, so testing invalid payloads against the mock would not provide meaningful validation. Against a real GSRI API, cases such as missing fields, invalid types and invalid `userId` values would be added.
 
-The Customer Profile schema validates the fields used by the GSRI tests while allowing additional fields from the upstream service.
+## Reports
 
-### Custom matchers
+The test run generates:
 
-The project includes custom matchers such as:
-
-```text
-toHaveStatus
-toMatchSchema
-```
-
-This allows assertions to stay close to the requirements being tested.
-
-## Assumptions and Limitations
-
-### JSONPlaceholder does not persist POST data
-
-JSONPlaceholder returns `201` for POST requests but does not actually store the created resource.
-
-Because of this, the follow-up GET behaves differently from what would normally be expected from a real API.
-
-The test uses `API_PERSISTS_WRITES` to handle both cases:
-
-```text
-false → expected behaviour for JSONPlaceholder
-true  → expected behaviour for a persistent backend
-```
-
-For JSONPlaceholder, the test verifies the returned ID and the documented `404` response from the follow-up GET.
-
-For a persistent backend, the test expects `200` and verifies the returned resource.
-
-### Bonus username filter
-
-The mock data does not contain a username starting with `J`, so the test expects an empty result for that case.
-
-The same logic is also tested with letters that have matching users.
-
-The filter is case-insensitive.
-
-### Error handling
-
-For a non-existent rate, JSONPlaceholder returns:
-
-```json
-{}
-```
-
-with HTTP status `404`.
-
-The negative test validates this behaviour.
-
-A real API could return a more detailed error response, in which case the assertion would be adapted to the actual API contract.
-
-### Test data
-
-The POST scenarios include different quote examples, including:
-
-* domestic shipment
-* international shipment
-* non-ASCII characters such as `Zürich → Kraków`
-
-Because JSONPlaceholder does not provide real shipping-rate calculation, pricing information is represented as test data in the request body.
-
-### Authentication
-
-JSONPlaceholder is a public API, so authentication is not required for this project.
-
-For an authenticated API, credentials or tokens should be stored in environment variables or CI secrets rather than directly in the test code.
-
-### Invalid POST payloads
-
-Invalid POST payload validation is not included because JSONPlaceholder accepts arbitrary request bodies.
-
-For a real GSRI API, additional negative tests would cover scenarios such as:
-
-* missing required fields
-* incorrect data types
-* invalid `userId`
-* invalid field values
-
-Expected responses would depend on the actual API contract, for example `400` or `422`.
-
-## Why Playwright?
-
-Playwright Test was selected because it provides an API testing client through `APIRequestContext` together with a test runner, fixtures, assertions, tags, retries and reporting.
-
-It also makes it possible to extend the same project with UI or end-to-end testing later if needed.
-
-The project uses plain JavaScript instead of TypeScript to keep the setup simple and avoid a compilation step. JSDoc types are used where additional editor support is useful.
-
-## Future Improvements
-
-Possible next steps for a real API environment would be:
-
-* Add authentication handling
-* Add more negative scenarios
-* Add request payload/schema validation
-* Add API response time assertions
-* Add environment-specific configuration for
+* **HTML report:** `reports/html`
+* **JUnit report:** `reports/junit.xml`
+* **Console output:** Playwright `list` reporter
