@@ -1,0 +1,18 @@
+<testsuites id="" name="" tests="6" failures="0" skipped="0" errors="0" time="1.007757">
+<testsuite name="functional.spec.js" timestamp="2026-09-28T14:45:53.727Z" hostname="" tests="3" failures="0" skipped="0" time="0.651" errors="0">
+<testcase name="Functional validation: GET /posts/{id} › rate #1 exists and belongs to a valid customer" classname="functional.spec.js" time="0.204">
+</testcase>
+<testcase name="Functional validation: GET /posts/{id} › rate #42 exists and belongs to a valid customer" classname="functional.spec.js" time="0.214">
+</testcase>
+<testcase name="Functional validation: GET /posts/{id} › rate #100 exists and belongs to a valid customer" classname="functional.spec.js" time="0.233">
+</testcase>
+</testsuite>
+<testsuite name="state-persistance.spec.js" timestamp="2026-09-28T14:45:53.727Z" hostname="" tests="3" failures="0" skipped="0" time="1.028" errors="0">
+<testcase name="State persistence: POST /posts › creates a quote (domestic standard)" classname="state-persistance.spec.js" time="0.294">
+</testcase>
+<testcase name="State persistence: POST /posts › creates a quote (international express)" classname="state-persistance.spec.js" time="0.368">
+</testcase>
+<testcase name="State persistence: POST /posts › creates a quote (non-ASCII address)" classname="state-persistance.spec.js" time="0.366">
+</testcase>
+</testsuite>
+</testsuites>

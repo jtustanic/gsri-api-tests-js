@@ -1,0 +1,22 @@
+{
+  "name": "gsri-api-tests",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+"test": "playwright test",
+"test:smoke": "playwright test --grep @smoke",
+"test:contract": "playwright test --grep @contract",
+"test:negative": "playwright test --grep @negative",
+"report": "playwright show-report reports/html"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "dotenv": "^18.0.4"
+  }
+}
