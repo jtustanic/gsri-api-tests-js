@@ -1,6 +1,4 @@
 const nonEmptyString = { type: 'string', minLength: 1 };
-// No additionalProperties: false here. Another team owns this service,
-// and a new field they add shouldn't break our tests (the "tolerant reader" idea).
 const customerProfileSchema = {
 type: 'object',
 required: ['id', 'name', 'username', 'email', 'address'],
@@ -8,7 +6,7 @@ properties: {
 id: { type: 'integer', minimum: 1 },
 name: nonEmptyString,
 username: nonEmptyString,
-email: { type: 'string', format: 'email' }, // must look like an email address
+email: { type: 'string', format: 'email' }, 
 address: {
 type: 'object',
 required: ['street', 'city', 'zipcode'],
